@@ -1,5 +1,6 @@
 <div align="left">
   <h1 align="center">
+    <img src="https://github.com/Yashagrahari07/CodeCanvas/blob/main/client/src/assets/logoCode.png" width="100" />
     <br>CodeCanvas
   </h1>
   <h3 align="center">A RealTime Code Editor</h3>
