@@ -1,0 +1,82 @@
+.navbar{
+    height: 9vh;
+    background: var(--header);
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1vh;
+    position: sticky;
+    top: 0; z-index: 1;
+}
+.app-icon{
+    display: flex;flex-direction: row; 
+    align-items: center; 
+    width: 50%;
+}
+.app-icon img{
+    height: 6vh;
+    width: 6vh;
+}
+.button-container{
+    display: flex; justify-content: center;
+}
+.menubuts{
+    margin:7px;
+    background-color:transparent;
+    color: var(--formcolor);
+    font-size: 3vh;
+    font-weight: 100;
+    padding: 1vh;
+    transition: 0.3s;
+    border: none; 
+    font-weight: 400;
+  }
+
+.menubuts a{
+    background: transparent;
+    color: var(--formcolor);
+    text-decoration: none;
+}
+.menubuts:hover{
+    background: var(--card1);
+    letter-spacing: 0.1vh ;
+    border-radius: 5px;
+    box-shadow: 0 0 5px var(--green2);
+}
+.navgrad{
+    height: 0.7vh; width: 100%;
+    content: '';
+    inset: 0;
+    background: linear-gradient(90deg,var(--green),var(--green2),var(--btnlight),var(--formcolor),var(--btnhover),var(--card1),var(--card));
+    animation: animate 20s linear infinite;
+    background-size: 500%;
+    position: sticky;
+    top: 11vh; z-index: 2;
+  }
+  
+.navgrad::after{
+    filter:blur(20px);  
+}
+  
+@keyframes animate {
+    0%{background-position: 0 0;}
+    0%{background-position: 400% 0;}
+}
+
+@media screen and (max-width: 700px) {
+    .app-icon{
+        width: 10%;
+    }
+    .app-icon .magic{
+        display: none;
+    }
+}
+@media screen and (max-width:400px) {
+    .menubuts{
+        font-size: 2.75vh;
+    }
+    .app-icon img{
+        height: 5vh; width: 5vh;
+    }
+}

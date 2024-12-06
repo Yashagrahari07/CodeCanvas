@@ -1,0 +1,227 @@
+body{
+    background:  var(--bgpage);
+}
+
+.home{ 
+    height: 100%;
+    padding: 3vh;  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.header {
+    color: white;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #989898;
+    margin-bottom: 1rem;
+}
+
+.heading {
+    font-size: 1.75rem; 
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.heading span {
+    font-weight: 700;
+}
+
+.add-button {
+    font-size: 1rem;
+    border-radius: 30px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+}
+
+.add-button span {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.folder-card {
+    width: 80%;
+    background: var(--folder-card);
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    border: 1px solid;
+    border-radius: 1vh;
+
+}
+
+.f-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    border-bottom: 1px solid #161616;
+    margin-bottom: 1rem;
+}
+
+.f-heading {
+    font-size: 1rem; 
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.f-heading span {
+    font-weight: 700;
+}
+
+.folder-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    cursor: pointer;
+}
+
+.folder-icons svg{
+    height: 3vh; width: 3vh;
+}
+
+.f-add-button {
+    font-size: 1rem;
+    border-radius: 30px;
+    color: black;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+}
+
+.f-add-button span {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.ws-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    
+}
+
+.card {
+    background: var(--card);
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 8px;
+    box-shadow: 0 0 1px 0px #ccc;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out; 
+    height: 10vh;
+}
+
+.card:hover {
+    box-shadow: 0 0 8px 0px #bbb;
+}
+
+.card-container {
+    display: flex;
+    align-items: center;
+}
+
+.card-content {
+    margin-left: 1rem;
+}
+
+.logo {
+    width: 5vh; height: 5vh;
+    margin-right: 1rem;
+}
+
+.folder-icons {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    cursor: pointer;
+}
+
+.folder-icons svg {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.modal-container{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content{
+    background-color: var(--formcolor);
+    padding: 2vh;
+    border-radius: 1vh;
+}
+
+.m-header{
+    color: var(--green);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.close-button{
+    background: transparent;
+    outline: 0;
+    border: 0;
+    font-size: 2rem;
+    cursor: pointer;
+}
+
+.input-container{
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 1vh;
+    gap: 0.75rem;   
+}
+
+.input {
+    flex-grow: 1;
+    height: 1.5rem;
+    outline: 0;
+}
+
+@media screen and (max-width:500px) {
+    .ws-cards{
+        grid-template-columns: none;
+        gap:1rem;
+    }
+    .f-add-button{
+        font-size: 0px;
+    }
+    .input-container {
+        gap: 1vh;
+        flex-direction: column;
+        justify-content: center;
+        align-items: baseline;
+    }
+    .folder-card{
+        width: 90%;
+    }
+}

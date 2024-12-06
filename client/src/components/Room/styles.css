@@ -1,0 +1,78 @@
+.room{
+    --side:rgb(31, 31, 31);
+    margin: 0;
+    padding: none;
+    background-color: var(--bgpage);
+}
+.mainWrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 100vh;
+}
+
+.aside {
+    background-color: var(--side);
+    padding: 2vh;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.asideInner {
+   height: 80%;
+}
+.clientsList {
+    margin-top: 2vh;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3vh;
+}
+
+.client {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-weight: bold;
+}
+
+.userName {
+    margin-top: 10px;
+}
+.rt-buttons{
+    display: flex; flex-direction: column;
+    gap: 1vh;
+}
+.btn,.leaveBtn{
+    border: none;
+    padding: 1vh;
+    border-radius: 5px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+.leaveBtn {
+    background: var(--btnlight);
+    margin-left: auto;
+    width: 100%;
+}
+
+.leaveBtn:hover {
+    background: var(--btnhover);
+}
+
+@media screen and (max-width:500px) {
+    .mainWrap {
+        display: inline-block;
+        height: 100vh; width: 100vw;
+    }
+    .aside{
+        flex-direction: row;
+    }
+    .btn,.leaveBtn{
+        font-size: small;
+    }
+}

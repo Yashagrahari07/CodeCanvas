@@ -1,0 +1,122 @@
+.container{
+    background-color: var(--bgpage);
+    height: 100vh;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.magic {
+    margin: 1vh;
+    font-size: 2em;
+    font-weight: 900;
+    text-align: center;
+    background: linear-gradient(
+        to right,
+        var(--green2),var(--green),var(--btnhover),var(--green2)
+    );
+    background-size: 200%;
+    background-clip: text;
+    -webkit-text-fill-color: rgba(254, 254, 254, 0);
+}
+
+.mainLabel{
+    background: var(--formcolor);
+    color: black;
+}
+.formWrapper {
+    box-shadow: 1vh 1vh 1vh rgba(255, 255, 255, 0.091);
+    display: flex;
+    flex-direction: column; justify-items: center;
+    background: var(--formcolor);
+    padding: 3vh;
+    border-radius: 10px;
+    border: solid 1vh var(--btnhover);
+    min-width: 30vw;
+}
+
+.inputGroup {
+    width: 100%;;
+    background: var(--formcolor);
+    display: flex;
+    flex-direction: column;
+}
+
+.inputBox { 
+    padding: 1vh;
+    outline: none;
+    border: 2px solid var(--btnhover);
+    margin-bottom: 14px;
+    background: var(--inpbg);
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.button {
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.5s ease-in-out;
+    background:var(--btncolor);
+    width: 100px;
+    margin-left: auto;
+}
+.button:hover {
+    background: var(--btnhover);
+}
+a{
+    background: var(--formcolor);
+    cursor: pointer;
+    color:black;
+    text-decoration: underline;
+}
+@media screen and (max-width: 900px) {
+   .container{
+    flex-direction: column;
+    gap:10vh;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10vh; padding-bottom: 10vh;
+   }
+   .formWrapper{
+    width: 40vw;
+   }
+}
+@media screen and (max-width: 750px) {
+    .container{
+     flex-direction: column;
+     gap:10vh;
+     justify-content: space-between;
+     align-items: center;
+     padding-top: 10vh; padding-bottom: 10vh;
+    }
+    .formWrapper{
+     min-width: 60vw;
+     padding: 2vh;
+    }
+ }
+@media screen and (max-width: 500px) {
+    .formWrapper {
+        min-width: 70vw;
+        padding: 2vh;
+    }
+    .inputBox {
+        padding: 0.75vh;
+        margin-bottom: 1.5vh;
+        font-size: 15px;
+    }
+    .magic{
+        font-size: 1.5em;
+    }
+    .button{
+        padding: 1.5vh;
+        width: auto;
+    }
+}
+@media screen and (max-width:400px) {
+    .formWrapper{
+        min-width: 80vw;
+    }
+}
