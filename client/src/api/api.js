@@ -1,6 +1,6 @@
 import axios from 'axios';
 const API= axios.create({
-  baseURL: 'http://localhost:5000/', // Your backend server URL
+  baseURL: 'https://codecanvas-api.onrender.com/', // Your backend server URL
 });
 
 API.interceptors.request.use((req)=>{

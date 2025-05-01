@@ -26,7 +26,11 @@ io.on('connection', (socket) => {
   socket.on(ACTIONS.SYNC_CODE, (data) => syncCode(socket, io, data));
 });
 
-app.use(cors());
+app.use(cors({
+  origin: 'https://codecanvas24.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 app.use(express.json());
 
 app.use('/user',userRouter);
