@@ -1,0 +1,112 @@
+.join-room-container {
+    background-color: var(--bgpage);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2vh 5vw;
+    padding-top: 12vh;
+    padding-bottom: 5vh;
+}
+
+.join-room-wrapper {
+    box-shadow: 1vh 1vh 1vh rgba(255, 255, 255, 0.091);
+    display: flex;
+    flex-direction: column;
+    justify-items: center;
+    background: var(--formcolor);
+    padding: 5vh;
+    border-radius: 10px;
+    border: solid 1vh var(--btnhover);
+    min-width: 40vw;
+    max-width: 600px;
+}
+
+.join-room-wrapper .magic {
+    margin-bottom: 2vh;
+}
+
+.mainLabel {
+    background: var(--formcolor);
+    color: black;
+    margin-bottom: 2vh;
+    font-size: 1.2em;
+}
+
+.inputGroup {
+    width: 100%;
+    background: var(--formcolor);
+    display: flex;
+    flex-direction: column;
+}
+
+.inputBox {
+    padding: 1.5vh;
+    outline: none;
+    border: 2px solid var(--btnhover);
+    margin-bottom: 2vh;
+    background: var(--inpbg);
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+}
+
+.button {
+    border: none;
+    padding: 1.5vh;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.5s ease-in-out;
+    background: var(--btncolor);
+    width: 100%;
+    margin-top: 1vh;
+}
+
+.button:hover {
+    background: var(--btnhover);
+    color: white;
+}
+
+.createInfo {
+    margin-top: 2vh;
+    text-align: center;
+    color: var(--textform);
+}
+
+.createNewBtn {
+    background: var(--formcolor);
+    cursor: pointer;
+    color: var(--green);
+    text-decoration: underline;
+    font-weight: bold;
+}
+
+a {
+    background: var(--formcolor);
+    cursor: pointer;
+    color: black;
+    text-decoration: underline;
+}
+
+@media screen and (max-width: 900px) {
+    .join-room-wrapper {
+        min-width: 60vw;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .join-room-wrapper {
+        min-width: 80vw;
+        padding: 3vh;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .join-room-wrapper {
+        min-width: 90vw;
+        padding: 2vh;
+    }
+}
+

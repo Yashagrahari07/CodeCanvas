@@ -1,0 +1,250 @@
+.about-container {
+    min-height: 100vh;
+    background-color: var(--bgpage);
+    padding: 2vh 5vw;
+    padding-top: 12vh;
+    padding-bottom: 5vh;
+}
+
+.about-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.about-header {
+    text-align: center;
+    margin-bottom: 5vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2vh;
+}
+
+.about-logo {
+    height: 10vh;
+    width: 10vh;
+    margin-bottom: 1vh;
+}
+
+.about-header .magic {
+    font-size: 3em;
+    margin: 0;
+}
+
+.about-section {
+    background: var(--formcolor);
+    padding: 4vh;
+    border-radius: 15px;
+    margin-bottom: 4vh;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--btnhover);
+}
+
+.about-section h2 {
+    color: var(--green);
+    font-size: 2.5em;
+    margin-bottom: 2vh;
+    text-align: center;
+}
+
+.about-section p {
+    color: var(--textform);
+    font-size: 1.2em;
+    line-height: 1.8;
+    text-align: justify;
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2vh;
+    margin-top: 3vh;
+}
+
+.feature-card {
+    background: var(--inpbg);
+    padding: 3vh;
+    border-radius: 10px;
+    border: 2px solid var(--btnlight);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    border-color: var(--green);
+}
+
+.feature-card h3 {
+    color: var(--green);
+    font-size: 1.5em;
+    margin-bottom: 1vh;
+}
+
+.feature-card p {
+    color: var(--textform);
+    font-size: 1em;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+    margin-top: 3vh;
+}
+
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 2vw;
+    background: var(--inpbg);
+    padding: 3vh;
+    border-radius: 10px;
+    border-left: 5px solid var(--green);
+}
+
+.step-number {
+    background: var(--green);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.step-content h3 {
+    color: var(--green);
+    font-size: 1.5em;
+    margin-bottom: 0.5vh;
+}
+
+.step-content p {
+    color: var(--textform);
+    font-size: 1.1em;
+    text-align: left;
+    margin: 0;
+}
+
+.tech-description {
+    text-align: center;
+    font-size: 1.3em;
+    font-weight: 500;
+}
+
+.about-actions {
+    display: flex;
+    justify-content: center;
+    gap: 2vw;
+    margin-top: 5vh;
+    flex-wrap: wrap;
+}
+
+.action-button {
+    padding: 1.5vh 4vw;
+    font-size: 1.2em;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--btncolor);
+    color: var(--textform);
+    border: 2px solid var(--btnhover);
+}
+
+.action-button:hover {
+    background: var(--btnhover);
+    color: white;
+    transform: scale(1.05);
+}
+
+.action-button.secondary {
+    background: transparent;
+    border: 2px solid var(--green);
+    color: var(--green);
+}
+
+.action-button.secondary:hover {
+    background: var(--green);
+    color: white;
+}
+
+@media screen and (max-width: 900px) {
+    .about-container {
+        padding: 2vh 3vw;
+        padding-top: 12vh;
+    }
+
+    .about-header .magic {
+        font-size: 2.5em;
+    }
+
+    .about-section {
+        padding: 3vh;
+    }
+
+    .about-section h2 {
+        font-size: 2em;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .about-header .magic {
+        font-size: 2em;
+    }
+
+    .about-section h2 {
+        font-size: 1.8em;
+    }
+
+    .about-section p {
+        font-size: 1em;
+    }
+
+    .step-item {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .step-content p {
+        text-align: center;
+    }
+
+    .about-actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .action-button {
+        width: 80%;
+        padding: 2vh 4vw;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .about-container {
+        padding: 2vh 2vw;
+        padding-top: 12vh;
+    }
+
+    .about-section {
+        padding: 2vh;
+    }
+
+    .feature-card {
+        padding: 2vh;
+    }
+}
+

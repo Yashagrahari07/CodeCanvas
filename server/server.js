@@ -26,9 +26,22 @@ io.on('connection', (socket) => {
   socket.on(ACTIONS.SYNC_CODE, (data) => syncCode(socket, io, data));
 });
 
+// CORS configuration - supports single origin or comma-separated multiple origins
+const corsOrigin = process.env.CORS_ORIGIN || 'https://codecanvas24.vercel.app';
+const allowedOrigins = corsOrigin.split(',').map(origin => origin.trim());
+
 app.use(cors({
-  origin: 'https://codecanvas24.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   credentials: true
 }));
 app.use(express.json());

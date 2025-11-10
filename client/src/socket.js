@@ -8,7 +8,7 @@ const initSocket = async () => {
         transports: ['websocket'],
     };
     
-    return io('https://codealong-1npm.onrender.com/', options);
+    return io(import.meta.env.VITE_SOCKET_URL || 'https://codealong-1npm.onrender.com/', options);
 };
 
 export default initSocket;

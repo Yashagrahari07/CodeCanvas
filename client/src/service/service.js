@@ -6,13 +6,17 @@ const languageMap = {
 };
 
 export async function getSubmission(tokenId, callback) {
-    const url = `https://judge0-ce.p.rapidapi.com/submissions/${tokenId}?base64_encoded=true&fields=*`;
+    const judge0ApiUrl = import.meta.env.VITE_JUDGE0_API_URL || 'https://judge0-ce.p.rapidapi.com/submissions';
+    const judge0ApiHost = import.meta.env.VITE_JUDGE0_API_HOST || 'judge0-ce.p.rapidapi.com';
+    const judge0ApiKey = import.meta.env.VITE_JUDGE0_API_KEY || '5dadd96374mshcc330d7bcf15012p118ebfjsn6e28f8eaa1d1';
+    
+    const url = `${judge0ApiUrl}/${tokenId}?base64_encoded=true&fields=*`;
     const options = {
         method: 'GET',
         headers: {
             'content-type': 'application/octet-stream',
-            'x-rapidapi-key': '5dadd96374mshcc330d7bcf15012p118ebfjsn6e28f8eaa1d1',
-            'x-rapidapi-host': 'judge0-ce.p.rapidapi.com'
+            'x-rapidapi-key': judge0ApiKey,
+            'x-rapidapi-host': judge0ApiHost
         }
     };
     try {
@@ -25,12 +29,16 @@ export async function getSubmission(tokenId, callback) {
 }
 
 export async function makeSubmission({ code, language, callback, stdin }) {
-    const url = 'https://judge0-ce.p.rapidapi.com/submissions/?base64_encoded=true&wait=false';
+    const judge0ApiUrl = import.meta.env.VITE_JUDGE0_API_URL || 'https://judge0-ce.p.rapidapi.com/submissions';
+    const judge0ApiHost = import.meta.env.VITE_JUDGE0_API_HOST || 'judge0-ce.p.rapidapi.com';
+    const judge0ApiKey = import.meta.env.VITE_JUDGE0_API_KEY || '5dadd96374mshcc330d7bcf15012p118ebfjsn6e28f8eaa1d1';
+    
+    const url = `${judge0ApiUrl}/?base64_encoded=true&wait=false`;
     const httpOptions = {
         method: 'POST',
         headers: {
-            'x-rapidapi-key': '5dadd96374mshcc330d7bcf15012p118ebfjsn6e28f8eaa1d1',
-            'x-rapidapi-host': 'judge0-ce.p.rapidapi.com',
+            'x-rapidapi-key': judge0ApiKey,
+            'x-rapidapi-host': judge0ApiHost,
             'content-type': 'application/json'
         },
         body: JSON.stringify({

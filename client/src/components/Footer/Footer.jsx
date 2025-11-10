@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './styles.css';
 import email from '../../assets/email.svg'
 import {
@@ -8,6 +9,13 @@ import {
 } from "react-icons/fa";
 
 export default function Footer(){
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const user = JSON.parse(localStorage.getItem('profile'));
+        setIsLoggedIn(!!user);
+    }, []);
 
     return(
         <div className='footer' id='about'>
@@ -15,9 +23,18 @@ export default function Footer(){
         <footer>
         <div className='navigation'>
             <div className='links'>
-                <a href='#login'><p>Login</p></a>
-                <a href='#login'><p>SignUp</p></a>
-                <a href='#join'><p>Join Room</p></a>
+                {isLoggedIn ? (
+                    <>
+                        <a onClick={(e) => { e.preventDefault(); navigate('/home'); }} style={{ cursor: 'pointer' }}><p>Home</p></a>
+                        <a onClick={(e) => { e.preventDefault(); navigate('/join-room'); }} style={{ cursor: 'pointer' }}><p>Join Room</p></a>
+                        <a onClick={(e) => { e.preventDefault(); navigate('/about'); }} style={{ cursor: 'pointer' }}><p>About Us</p></a>
+                    </>
+                ) : (
+                    <>
+                        <a onClick={(e) => { e.preventDefault(); navigate('/auth?mode=login'); }} style={{ cursor: 'pointer' }}><p>Login</p></a>
+                        <a onClick={(e) => { e.preventDefault(); navigate('/auth?mode=signup'); }} style={{ cursor: 'pointer' }}><p>SignUp</p></a>
+                    </>
+                )}
             </div>           
         </div>
         <div className='dev-contact'> 
@@ -39,7 +56,7 @@ export default function Footer(){
            </div>
             </div>
         </footer>
-        <div style={{height:'3vh',width:'100%',background:'black',color:'white',textAlign:'center'}}>&#169; 2024 CodeAlong</div>
+        <div style={{height:'3vh',width:'100%',background:'black',color:'white',textAlign:'center'}}>&#169; 2024 CodeCanvas</div>
         </div>
     )
 }

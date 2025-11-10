@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../Navbar/Navbar';
 import './styles.css';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import * as api from '../../api/api';
 import toast from 'react-hot-toast';
@@ -9,10 +9,23 @@ import Footer from '../Footer/Footer';
 
 const Auth = () => {
     const navigate = useNavigate();
-    const [isSignUp, setIsSignUp] = useState(true);
-    const [roomId,setRoomId]=useState('');
-    const [username,setUsername]=useState('');
+    const location = useLocation();
+    const searchParams = new URLSearchParams(location.search);
+    const mode = searchParams.get('mode') || 'signup'; // default to signup
+    const [isSignUp, setIsSignUp] = useState(mode === 'signup');
     const user=JSON.parse(localStorage.getItem('profile'));
+    
+    // Update state when URL changes
+    useEffect(() => {
+        setIsSignUp(mode === 'signup');
+    }, [mode]);
+    
+    // Redirect to home if already logged in
+    useEffect(() => {
+        if (user) {
+            navigate('/home');
+        }
+    }, [user, navigate]);
     
     const [formData, setFormData] = useState({
       fullName: '',
@@ -22,7 +35,8 @@ const Auth = () => {
   });
 
   const handleSwitchMode = () => {
-    setIsSignUp((prevIsSignUp) => !prevIsSignUp);
+    const newMode = isSignUp ? 'login' : 'signup';
+    navigate(`/auth?mode=${newMode}`, { replace: true });
     setFormData({
       fullName: '',
       email: '',
@@ -86,37 +100,6 @@ const Auth = () => {
     }
   };
 
-  const createRoom=async(e)=>{
-    e.preventDefault();
-    try {
-        const {data} = await api.createRoom();
-        console.log(data)
-        setRoomId(data.roomId);
-        toast.success('Created a new room');
-    } catch (err) {
-        toast.error('Could not create a new room');
-    }  
-  }
-
-  const joinRoom = () => {
-    if (!roomId || !username) {
-      toast.error('ROOM ID & username are required');
-      return;
-    }
-    toast.success("Welcome to the Room",{
-      position:'top-center'
-    })
-    navigate(`/room/${roomId}`, {
-      state: {
-          username,
-      },
-  });
-  };
-
-  const handleInputEnter = (e) => {
-    if (e.code === 'Enter') 
-      joinRoom();
-  };
 
   return (
     <><Navbar/>
@@ -181,42 +164,6 @@ const Auth = () => {
         </a>
         </div>
       </form>}
-     
-      <div id='join' className="formWrapper">
-      <h2 className='magic'>Join/Create Room</h2>
-        <h4 className="mainLabel">Paste invitation Room Id</h4>
-          <div className="inputGroup">
-            <input
-              type="text"
-              className="inputBox"
-              placeholder="ROOM ID"
-              onChange={(e) => {setRoomId(e.target.value)}}
-              value={roomId}
-              onKeyUp={handleInputEnter}
-            />
-            <input
-              type="text"
-              className="inputBox"
-              placeholder="USERNAME"
-              onChange={(e) => {setUsername(e.target.value)}}
-              value={username}
-              onKeyUp={handleInputEnter}
-              required
-            />
-            <button className="button" onClick={joinRoom}>
-              Join
-            </button>
-            <span className="createInfo">
-              Don't have an invite ?  &nbsp;
-            <a onClick={createRoom}
-              href=""
-              className="createNewBtn"
-            >
-            Create own Room
-            </a>
-            </span>
-          </div>
-      </div>
     </div>  
     <Footer/>
     </>
