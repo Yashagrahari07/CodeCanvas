@@ -11,6 +11,8 @@ const Playground = () => {
 
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
+  const [editorWidth, setEditorWidth] = useState(65); // percentage
+  const [isResizing, setIsResizing] = useState(false);
 
   const[showLoader,setShowLoader]=useState(false);
 
@@ -85,14 +87,55 @@ const Playground = () => {
   }, [input, callback]);
   //recreates this function whenever there's change in input
 
+  const handleMouseDown = (e) => {
+    setIsResizing(true);
+    e.preventDefault();
+  };
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!isResizing) return;
+      const container = document.querySelector('.playground-container');
+      if (!container) return;
+      const containerWidth = container.offsetWidth;
+      const newWidth = (e.clientX / containerWidth) * 100;
+      // Limit between 40% and 85% of container width
+      if (newWidth >= 40 && newWidth <= 85) {
+        setEditorWidth(newWidth);
+      }
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    if (isResizing) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = 'col-resize';
+      document.body.style.userSelect = 'none';
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+  }, [isResizing]);
+
   return (
     <div className='playground-container'>
-      <div className='content-container'>
+      <div className='content-container' style={{ width: `${editorWidth}%` }}>
         <div className='editor-container'>
           <CodeEditor runCode={runCode}/>
         </div>
       </div>
-        <div className='in-out-container'>
+      <div 
+        className='resizer'
+        onMouseDown={handleMouseDown}
+      ></div>
+      <div className='in-out-container' style={{ width: `${100 - editorWidth}%` }}>
         <div className='inputt-container'>
           <div className='inputt-header'>
             <b>Input :</b>
