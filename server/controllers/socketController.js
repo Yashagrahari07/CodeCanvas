@@ -11,7 +11,11 @@ function getAllConnectedClients(roomId, io, userSocketMap) {
     );
 }
 
-export const joinRoom = (socket, io, userSocketMap, { roomId, username }) => {
+export const joinRoom = (socket, io, userSocketMap, { roomId, username } = {}) => {
+    if (typeof roomId !== 'string' || !roomId.trim() || typeof username !== 'string' || !username.trim()) {
+        return;
+    }
+
     userSocketMap[socket.id] = username;
     socket.join(roomId);
     const clients = getAllConnectedClients(roomId, io, userSocketMap);
@@ -35,11 +39,19 @@ export const disconnect = (socket, io, userSocketMap) => {
     socket.leave();
 };
 
-export const handleCodeChange = (socket, { roomId, code }) => { 
+export const handleCodeChange = (socket, { roomId, code } = {}) => {
+    if (!socket.rooms.has(roomId) || typeof code !== 'string') {
+        return;
+    }
+
     socket.in(roomId).emit(ACTIONS.CODE_CHANGE, { code });
 };
 
-export const syncCode = (socket, io, { socketId, code }) => {
-    //console.log(code);
+export const syncCode = (socket, io, { roomId, socketId, code } = {}) => {
+    const targetSocket = io.sockets.sockets.get(socketId);
+    if (!socket.rooms.has(roomId) || !targetSocket?.rooms.has(roomId) || typeof code !== 'string') {
+        return;
+    }
+
     io.to(socketId).emit(ACTIONS.CODE_CHANGE, { code });
 };

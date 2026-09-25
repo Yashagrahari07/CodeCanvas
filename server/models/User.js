@@ -18,4 +18,13 @@ const userSchema=mongoose.Schema({
     id:{type:String},
     ws: [workspaceSchema],
 })
+
+userSchema.set('toJSON', {
+  transform: (_document, returnedUser) => {
+    delete returnedUser.password;
+    delete returnedUser.__v;
+    return returnedUser;
+  },
+});
+
 export default mongoose.model('User',userSchema);

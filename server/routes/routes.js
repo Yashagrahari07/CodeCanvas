@@ -1,12 +1,14 @@
 import express from 'express';
 import { signup,signin} from '../controllers/user.js';
 import {getUserWorkspaces, addUserWorkspace, deleteWorkspace, updateWorkspaceName, addCardToWorkspace, updateCardName, deleteCardFromWorkspace, updateCardCode, getCardDetails} from '../controllers/userWorkspaces.js';
+import auth, { authorizeUser } from '../middlewares/auth.js';
 
 const userRouter=express.Router();
 
 userRouter.post('/signin',signin);
 userRouter.post('/signup',signup);
 
+userRouter.use('/:id/workspaces', auth, authorizeUser);
 userRouter.get('/:id/workspaces', getUserWorkspaces);
 userRouter.post('/:id/workspaces', addUserWorkspace);
 userRouter.delete('/:id/workspaces/:wsId', deleteWorkspace);

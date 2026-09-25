@@ -43,6 +43,7 @@ const Room = () => {
                 }
                 setClients(clients);
                 socketRef.current.emit(ACTIONS.SYNC_CODE, {
+                  roomId,
                     code: codeRef.current,
                     socketId,
                 });           
