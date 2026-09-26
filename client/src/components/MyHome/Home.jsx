@@ -25,6 +25,12 @@ const Home = () => {
     const [currentWsId, setCurrentWsId] = useState(null);
     const [currentCardId, setCurrentCardId] = useState(null);
     const[showLoader,setShowLoader]=useState(false);
+    const activateWithKeyboard = (event, action) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        action();
+      }
+    };
 
     const getList=async()=>{
         setShowLoader(true);
@@ -104,7 +110,7 @@ const Home = () => {
                           toast.success('Deleted Workspace');
                           await getList();
                         } catch (error) {
-                          toast.error(error?.response?.data?.message || 'Could not delete workspace');
+                          toast.error(error?.response?.data?.message || 'Could not delete file');
                         } finally {
                           toast.dismiss(t.id);
                         }
@@ -124,7 +130,8 @@ const Home = () => {
                 <h3 className="heading">
                     My <span> Folders</span>
                 </h3>
-                <div className="add-button" 
+                <div className="add-button" role="button" tabIndex={0} aria-label="Create new folder"
+                  onKeyDown={(event) => activateWithKeyboard(event, () => {setM(1); setOpenModal({ state: true});})}
                     onClick={() => {setM(1); setOpenModal({ state: true})}}
                 > <span>+</span> New Folder</div>        
         </div>
@@ -139,11 +146,12 @@ const Home = () => {
                             <FcOpenedFolder/>{ele.title}
                         </h3>
                         <div className="folder-icons">
-                            <IoTrashOutline onClick={()=>deleteWs(ele._id)}/>
-                            <BiEditAlt onClick={() => editWsname(ele._id)}/> 
-                            <div className="f-add-button"
+                            <IoTrashOutline role="button" tabIndex={0} aria-label={`Delete folder ${ele.title}`} title="Delete folder" onClick={()=>deleteWs(ele._id)} onKeyDown={(event) => activateWithKeyboard(event, () => deleteWs(ele._id))}/>
+                            <BiEditAlt role="button" tabIndex={0} aria-label={`Rename folder ${ele.title}`} title="Rename folder" onClick={() => editWsname(ele._id)} onKeyDown={(event) => activateWithKeyboard(event, () => editWsname(ele._id))}/>
+                            <div className="f-add-button" role="button" tabIndex={0} aria-label={`Create file in ${ele.title}`}
+                              onKeyDown={(event) => activateWithKeyboard(event, () => addCard(ele._id))}
                                 onClick={() => addCard(ele._id)}
-                            ><span>+</span> New Workspace </div>
+                            ><span>+</span> New File </div>
                         </div>
                     </div>
                     <div className="ws-cards" >
@@ -157,8 +165,8 @@ const Home = () => {
                                     </div>
                                 </div>
                                 <div className="folder-icons">
-                                    <IoTrashOutline onClick={() => deleteCard(ele._id, card._id)}/>
-                                    <BiEditAlt onClick={() => editCardName(ele._id, card._id)}/>                                
+                                    <IoTrashOutline role="button" tabIndex={0} aria-label={`Delete file ${card.title}`} title="Delete file" onClick={() => deleteCard(ele._id, card._id)} onKeyDown={(event) => activateWithKeyboard(event, () => deleteCard(ele._id, card._id))}/>
+                                    <BiEditAlt role="button" tabIndex={0} aria-label={`Rename file ${card.title}`} title="Rename file" onClick={() => editCardName(ele._id, card._id)} onKeyDown={(event) => activateWithKeyboard(event, () => editCardName(ele._id, card._id))}/>
                                 </div>
                             </div>     
                     ))} 

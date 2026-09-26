@@ -5,6 +5,7 @@ import { VscRunAll } from "react-icons/vsc";
 import {Editor} from '@monaco-editor/react';
 import { updateCardCode,getCardDetails } from '../../api/api';
 import { toast } from 'react-hot-toast';
+import { downloadTextFile } from '../../service/download';
 
 const CodeEditor = ({runCode}) => {
    const user=JSON.parse(localStorage.getItem('profile'));
@@ -19,7 +20,6 @@ const CodeEditor = ({runCode}) => {
 
    const params=useParams();
    const {folderId,fileId}=params;
-   //console.log(folder,file);
   
    useEffect(() => {
                 let cancelled = false;
@@ -73,7 +73,6 @@ const CodeEditor = ({runCode}) => {
    }
 
    const onCodeChange=(newCode)=>{
-        //console.log(newCode);
         codeRef.current=newCode;
     }
    useEffect(()=>{
@@ -94,7 +93,6 @@ const CodeEditor = ({runCode}) => {
    const importCode=(e)=>{
         const file=e.target.files[0];
       if (!file) return;
-        console.log(file)
         const type=file.type.includes("text");
         if(type){
             const fileReader= new FileReader();
@@ -135,17 +133,7 @@ const CodeEditor = ({runCode}) => {
               });
             return;
         }
-        //create a blob/instant file in memory
-        const codeBlob=new Blob([codeVal],{type:"text/plain"});
-
-        //create downloadable link with blob data
-        const url=URL.createObjectURL(codeBlob);
-
-        //create clickable link to download
-        const link=document.createElement("a");
-        link.href=url;
-        link.download=`code.${fileExtension[lang].name}`;
-        link.click();
+        downloadTextFile(codeVal, `code.${fileExtension[lang]?.name || lang}`);
   }
   const saveEditorCode=async()=>{
                 try {

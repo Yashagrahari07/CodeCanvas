@@ -5,6 +5,7 @@ import { Editor } from '@monaco-editor/react';
 import './styles.css';
 import ACTIONS from '../../actionTypes';
 import { toast } from 'react-hot-toast';
+import { downloadTextFile } from '../../service/download';
 
 const RealtimeEditor = ({ socket, roomId, initialCode, OnChangeCode, onRunCode, onSaveCode }) => {
     const [code, setCode] = useState('');
@@ -148,12 +149,7 @@ const RealtimeEditor = ({ socket, roomId, initialCode, OnChangeCode, onRunCode, 
             java: 'java',
             javascript: 'js'
         };
-        const codeBlob = new Blob([codeVal], { type: "text/plain" });
-        const url = URL.createObjectURL(codeBlob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = `code.${fileExtension[lang] || lang}`;
-        link.click();
+        downloadTextFile(codeVal, `code.${fileExtension[lang] || lang}`);
     };
 
     const handleRunCode = () => {

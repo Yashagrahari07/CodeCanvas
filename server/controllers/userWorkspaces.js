@@ -19,7 +19,7 @@ export const getUserWorkspaces = async (req, res) => {
     }
     res.status(200).json(user.ws);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -40,13 +40,12 @@ export const addUserWorkspace = async (req, res) => {
     await user.save();
     res.status(201).json(user.ws);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error });
+    res.status(500).json({ message: 'Server error' });
   }
 };
 export const deleteWorkspace = async (req, res) => {
   const { id, wsId} = req.params;
   if (!isValidObjectId(id) || !isValidObjectId(wsId)) return res.status(400).json({ message: 'Invalid workspace ID' });
-  //console.log(id,wsId)
   try {
       const user = await User.findById(id);
       if (!user) {
@@ -56,7 +55,7 @@ export const deleteWorkspace = async (req, res) => {
       await user.save();
       res.status(200).json({ message: 'Workspace deleted successfully' });
   } catch (error) {
-      res.status(500).json({ message: 'Failed to delete workspace', error });
+      res.status(500).json({ message: 'Failed to delete workspace' });
   }
 };
 export const updateWorkspaceName = async (req, res) => {
@@ -68,6 +67,7 @@ export const updateWorkspaceName = async (req, res) => {
 
   try {
       const user = await User.findById(id);
+      if (!user) return res.status(404).json({ message: 'User not found' });
       const workspace = user.ws.id(wsId);
       
       if (!workspace) {
@@ -79,7 +79,7 @@ export const updateWorkspaceName = async (req, res) => {
       
       res.status(200).json(workspace);
   } catch (error) {
-      res.status(500).json({ message: "Something went wrong", error });
+      res.status(500).json({ message: "Something went wrong" });
   }
 };
 export const addCardToWorkspace = async (req, res) => {
@@ -119,13 +119,13 @@ export const updateCardName = async (req, res) => {
 
   try {
       const user = await User.findById(id);
-      if (!user) return res.status(404).send('User not found');
+      if (!user) return res.status(404).json({ message: 'User not found' });
 
       const workspace = user.ws.id(wsId);
-      if (!workspace) return res.status(404).send('Workspace not found');
+      if (!workspace) return res.status(404).json({ message: 'Workspace not found' });
 
       const card = workspace.cards.id(cardId);
-      if (!card) return res.status(404).send('Card not found');
+      if (!card) return res.status(404).json({ message: 'File not found' });
 
       card.title = newTitle;
 
@@ -143,13 +143,13 @@ export const deleteCardFromWorkspace = async (req, res) => {
 
   try {
       const user = await User.findById(id);
-      if (!user) return res.status(404).send('User not found');
+      if (!user) return res.status(404).json({ message: 'User not found' });
 
       const workspace = user.ws.id(wsId);
-      if (!workspace) return res.status(404).send('Workspace not found');
+      if (!workspace) return res.status(404).json({ message: 'Workspace not found' });
 
       const card = workspace.cards.id(cardId);
-      if (!card) return res.status(404).send('Card not found');
+      if (!card) return res.status(404).json({ message: 'File not found' });
 
       workspace.cards.pull(cardId);
 
@@ -189,16 +189,15 @@ export const updateCardCode = async (req, res) => {
   if (!isValidObjectId(id) || !isValidObjectId(wsId) || !isValidObjectId(cardId) || typeof newCode !== 'string' || newCode.length > 100000) {
       return res.status(400).json({ message: 'Invalid source code' });
   }
-  //console.log(id,wsId,cardId,newCode);
   try {
       const user = await User.findById(id);
-      if (!user) return res.status(404).send('User not found');
+      if (!user) return res.status(404).json({ message: 'User not found' });
 
       const workspace = user.ws.id(wsId);
-      if (!workspace) return res.status(404).send('Workspace not found');
+      if (!workspace) return res.status(404).json({ message: 'Workspace not found' });
 
       const card = workspace.cards.id(cardId);
-      if (!card) return res.status(404).send('Card not found');
+      if (!card) return res.status(404).json({ message: 'File not found' });
 
       card.code = newCode;
 

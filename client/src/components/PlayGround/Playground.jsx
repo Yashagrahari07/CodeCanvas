@@ -3,12 +3,10 @@ import './styles.css';
 import { BiArrowFromBottom, BiArrowToBottom } from "react-icons/bi";
 import CodeEditor from './CodeEditor';
 import {formatExecutionResult, makeSubmission} from '../../service/service';
+import { downloadTextFile } from '../../service/download';
 import { toast } from 'react-hot-toast';
 
 const Playground = () => {
-  const user=JSON.parse(localStorage.getItem('profile'));
-  const userId=user?.result?._id;
-
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [editorWidth, setEditorWidth] = useState(65); // percentage
@@ -53,12 +51,7 @@ const Playground = () => {
       ));
       return;
     }
-    const outBlob = new Blob([outVal], { type: "text/plain" });
-    const url = URL.createObjectURL(outBlob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `output.txt`;
-    link.click();
+    downloadTextFile(outVal, 'output.txt');
   }
   const callback = useCallback(({ apiStatus, data, message }) => {
     if (apiStatus === 'loading') {
@@ -82,7 +75,6 @@ const Playground = () => {
       isCurrent: () => runId === latestRunRef.current,
     });
   }, [input, callback]);
-  //recreates this function whenever there's change in input
 
   const handleMouseDown = (e) => {
     setIsResizing(true);

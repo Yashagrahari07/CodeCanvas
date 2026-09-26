@@ -57,7 +57,6 @@ const Auth = () => {
   const signin = async (formData, navigate) => {
     try {
       const { data } = await api.signIn(formData);
-      console.log(data);
       localStorage.setItem('profile', JSON.stringify(data));
       navigate('/home');
       toast.success("Signed in successfully",{
@@ -73,10 +72,8 @@ const Auth = () => {
   };
 
   const signup = async (formData, navigate) => {
-    console.log(formData)
     try {
       const { data } = await api.signUp(formData);
-      console.log(data);
       localStorage.setItem('profile', JSON.stringify(data));
       navigate('/home');
       toast.success("Signed up successfully",{
@@ -94,6 +91,10 @@ const Auth = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSignUp) {
+      if (!formData.fullName.trim() || formData.password !== formData.confirmPassword) {
+        toast.error('Enter your name and matching passwords', { position:'top-center' });
+        return;
+      }
       signup(formData, navigate);
     } else {
       signin(formData, navigate);
@@ -118,6 +119,7 @@ const Auth = () => {
               placeholder='Full Name'
               value={formData.fullName}
               onChange={handleChange}
+              required
             />         
         )}
         <input
@@ -139,10 +141,11 @@ const Auth = () => {
           onChange={handleChange}
           type={showPassword ? 'text' : 'password'}
           required
+          minLength={8}
         />
-        <div onClick={handleShowPassword}>
+        <button type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} onClick={handleShowPassword}>
           {showPassword ? <FaEye /> : <FaEyeSlash />}
-        </div>
+        </button>
         {isSignUp && (
           <div className="inputGroup">
             <input
@@ -153,15 +156,17 @@ const Auth = () => {
               placeholder='Confirm Password'
               value={formData.confirmPassword}
               onChange={handleChange}
+              required
+              minLength={8}
             />
           </div>
         )}
         <button type="submit" className="button">
           {isSignUp ? 'Sign Up' : 'Sign In'}
         </button>
-        <a onClick={handleSwitchMode}>
+        <button type="button" onClick={handleSwitchMode}>
           {isSignUp ? 'Already have an account? Sign In' : 'Don\'t have an account? Sign Up'}
-        </a>
+        </button>
         </div>
       </form>}
     </div>  

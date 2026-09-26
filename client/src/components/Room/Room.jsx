@@ -8,6 +8,7 @@ import toast from 'react-hot-toast';
 import RealtimeEditor from '../CodeEditor/RealtimeEditor.jsx';
 import { BiArrowFromBottom, BiArrowToBottom } from "react-icons/bi";
 import { formatExecutionResult, makeSubmission } from '../../service/service.js';
+import { downloadTextFile } from '../../service/download.js';
 
 const Room = () => {
     const location = useLocation();
@@ -26,7 +27,6 @@ const Room = () => {
       codeRef.current = code;
     }, []);
 
-    //console.log(roomId);
     useEffect(() => {
       let cancelled = false;
       const init = async () => {
@@ -39,8 +39,7 @@ const Room = () => {
               socketRef.current = connectedSocket;
               setSocket(connectedSocket);
               connectedSocket.on("connect_error", (err) => {
-                console.log(err.message,err.description);
-                console.log(err.description);
+                toast.error(`Room connection failed: ${err.message}`);
               });
 
               const joinCurrentRoom = () => {
@@ -81,7 +80,7 @@ const Room = () => {
               if (connectedSocket.connected) joinCurrentRoom();
 
           } catch (err) {
-              console.error('Socket connection error:', err);
+              toast.error('Could not connect to the room');
               navigate('/');
           }
       };
@@ -107,7 +106,6 @@ const Room = () => {
         toast.success('Room ID has been copied to your clipboard');
     } catch (err) {
         toast.error('Could not copy the Room ID');
-        console.error(err);
     }
   };
 
@@ -151,12 +149,7 @@ const Room = () => {
       ));
       return;
     }
-    const outBlob = new Blob([outVal], { type: "text/plain" });
-    const url = URL.createObjectURL(outBlob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `output.txt`;
-    link.click();
+    downloadTextFile(outVal, 'output.txt');
   };
 
   const callback = useCallback(({ apiStatus, data, message }) => {

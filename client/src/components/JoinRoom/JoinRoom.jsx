@@ -10,7 +10,6 @@ const JoinRoom = () => {
     const navigate = useNavigate();
     const [roomId, setRoomId] = useState('');
     const [username, setUsername] = useState('');
-    const user = JSON.parse(localStorage.getItem('profile'));
 
     // Pre-fill username if user is logged in
     useEffect(() => {
@@ -24,7 +23,6 @@ const JoinRoom = () => {
         e.preventDefault();
         try {
             const { data } = await api.createRoom();
-            console.log(data);
             setRoomId(data.roomId);
             toast.success('Created a new room');
         } catch (err) {
@@ -82,12 +80,11 @@ const JoinRoom = () => {
                         </button>
                         <span className="createInfo">
                             Don't have an invite ?  &nbsp;
-                            <a onClick={createRoom}
-                                href=""
+                            <button type="button" onClick={createRoom}
                                 className="createNewBtn"
                             >
                                 Create own Room
-                            </a>
+                            </button>
                         </span>
                     </div>
                 </div>

@@ -22,7 +22,6 @@ const auth = async (req, res, next) => {
 
     next();
   } catch (error) {
-    console.error("Authentication error: ", error);
     res.status(500).json({ message: "Server error" });
   }
 };

@@ -49,7 +49,9 @@ export const signup = async (req, res) => {
   
       res.status(200).json({ result, token });
     } catch (error) {
-      console.error("Signup error: ", error);
+      if (error?.code === 11000) {
+        return res.status(400).json({ message: "User already exists" });
+      }
       res.status(500).json({ message: "Something went wrong" });
     }
   };

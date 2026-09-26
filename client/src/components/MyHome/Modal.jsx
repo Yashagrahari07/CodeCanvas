@@ -1,8 +1,8 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IoCloseSharp } from 'react-icons/io5';
 import { FcOk } from 'react-icons/fc';
 import toast from 'react-hot-toast';
-import {getData,addData,updateWorkspaceName,addCardToWorkspace,updateCardName} from '../../api/api';
+import {addData,updateWorkspaceName,addCardToWorkspace,updateCardName} from '../../api/api';
 
 
 const Model = ({ openModal, setOpenModal, wsId, cardId, getLists }) => {
@@ -11,9 +11,6 @@ const Model = ({ openModal, setOpenModal, wsId, cardId, getLists }) => {
   const [msg, setMsg] = useState('');
   const [enteredVal, setEnteredVal] = useState('');
   const [enteredLang,setLang]=useState('');
-  const [folders,setFolders]=useState([]);
-
-  const inputRef = useRef(null);
 
   const handleChange = (event, field) => {
     if (field === 'title') {
@@ -24,18 +21,6 @@ const Model = ({ openModal, setOpenModal, wsId, cardId, getLists }) => {
   };
 
 
-  useEffect(()=>{   
-    const getList=async()=>{
-      try {
-        const list=await getData(userId);
-        setFolders(list.data);
-      } catch (error) {
-        setFolders([]);
-      }
-    }
-    getList();
-  },[])
-
   const addFolder = async(folderName) => {
     const newState= {
       title: folderName,
@@ -45,7 +30,6 @@ const Model = ({ openModal, setOpenModal, wsId, cardId, getLists }) => {
     await getLists();
   }
   const updateFolder=async(wsId, enteredVal)=>{
-    //console.log(userId,wsId,enteredVal);
     await updateWorkspaceName(userId, wsId, enteredVal);
     await getLists();
   }
@@ -60,13 +44,15 @@ const Model = ({ openModal, setOpenModal, wsId, cardId, getLists }) => {
   };
   
   const editCardname=async(wsId, cardId, enteredVal)=>{
-    //console.log(wsId,cardId,enteredVal)
     await updateCardName(userId, wsId, cardId, enteredVal);
     await getLists();
   }
 
   const handleSubmit = async () => {
-    if (!enteredVal.trim() || (openModal === 2 && !enteredLang)) return;
+    if (!enteredVal.trim() || (openModal === 2 && !enteredLang)) {
+      toast.error(openModal === 2 ? 'Enter a file name and select a language' : 'Enter a title');
+      return;
+    }
     const m = openModal;
     try {
       switch (m) {
@@ -85,19 +71,18 @@ const Model = ({ openModal, setOpenModal, wsId, cardId, getLists }) => {
 
   useEffect(() => {
     const m = openModal;
-    //console.log(m);
     switch (m) {
       case 1:
         setMsg('Enter Foldername');
         break;
       case 2:
-        setMsg('Enter Workspace name');
+        setMsg('Enter File name');
         break;
       case 3:
         setMsg('Edit Foldername');
         break;
       case 4:
-        setMsg('Edit Workspace name');
+        setMsg('Edit File name');
         break;
       default:
         setMsg('');
@@ -119,14 +104,12 @@ const Model = ({ openModal, setOpenModal, wsId, cardId, getLists }) => {
             className='input'
             placeholder='title'
             type="text"
-            ref={inputRef}
             value={enteredVal}
             onChange={(event) => handleChange(event, 'title')}
           />
           {openModal==2 && (
             <select
            
-            ref={inputRef}
             value={enteredLang}
             onChange={(event) => handleChange(event, 'language')}
           >
