@@ -1,19 +1,108 @@
-*{
-    --formcolor:#e2e3e2;
-    --header:#2b2a2a;
+@import "tailwindcss";
+
+/* ── CodeCanvas Global Theme Variables ─────────────────────────────── */
+:root {
+    --formcolor: #e2e3e2;
+    --header: #2b2a2a;
     --bgpage: #323232;
-    --textform:rgb(0, 0, 0);
-    --btncolor:#eee;
-    --btnlight:#8ab180;
-    --btnhover:#61ab4e;
-    --green2:#55a940;
-    --card1:#5da54b;
-    --card:#bbccb7;
-    --green:#487d3b;
-    --inpbg:#eee;
-    --modal:#e2e3e2b5;
-    --folder-card:#81aa77f5;
-    font-family:'Segoe UI', Tahoma, Verdana, sans-serif;
+    --textform: rgb(0, 0, 0);
+    --btncolor: #eee;
+    --btnlight: #8ab180;
+    --btnhover: #61ab4e;
+    --green2: #55a940;
+    --card1: #5da54b;
+    --card: #bbccb7;
+    --green: #487d3b;
+    --inpbg: #eee;
+    --modal: #e2e3e2b5;
+    --folder-card: #81aa77f5;
+    /* Stable navbar height — used for calc() offsets */
+    --navbar-h: 56px;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
     margin: 0;
-    padding: none;
-  }
+    padding: 0;
+}
+
+/* ── Map shadcn/ui tokens to CodeCanvas palette ─────────────────────*/
+@layer base {
+    :root {
+        --background: var(--bgpage);
+        --foreground: var(--formcolor);
+        --card-background: var(--formcolor);
+        --card-foreground: var(--textform);
+        --popover: var(--formcolor);
+        --popover-foreground: var(--textform);
+        --primary: var(--btnhover);
+        --primary-foreground: #ffffff;
+        --secondary: var(--btnlight);
+        --secondary-foreground: var(--textform);
+        --muted: var(--card);
+        --muted-foreground: #555;
+        --accent: var(--green2);
+        --accent-foreground: #ffffff;
+        --destructive: #d9534f;
+        --destructive-foreground: #ffffff;
+        --border: var(--btnlight);
+        --input: var(--inpbg);
+        --ring: var(--btnhover);
+        --radius: 0.5rem;
+    }
+}
+
+/* ── Global resets ───────────────────────────────────────────────────*/
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bgpage);
+    color: var(--formcolor);
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── .magic gradient text — preserved exactly ────────────────────────*/
+.magic {
+    font-weight: inherit;
+    background: linear-gradient(
+        to right,
+        var(--green2), var(--green), var(--btnhover), var(--green2)
+    );
+    background-size: 200%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: rgba(254, 254, 254, 0);
+    color: transparent;
+}
+
+/* ── Animated gradient strip (navbar + footer) ───────────────────────*/
+@keyframes animate {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 400% 50%; }
+}
+
+/* ── Landing logo float animation ────────────────────────────────────*/
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50%       { transform: translateY(-20px); }
+}
+
+/* ── Spinner animation ───────────────────────────────────────────────*/
+@keyframes spin-loader {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+/* ── Global textarea base ────────────────────────────────────────────*/
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+    resize: none;
+    background-color: var(--bgpage);
+    color: white;
+    outline: none;
+    border: 1px solid var(--btnlight);
+    padding: 0.5rem;
+    font-family: 'Courier New', monospace;
+}
