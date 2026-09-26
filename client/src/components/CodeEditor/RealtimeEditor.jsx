@@ -6,35 +6,52 @@ import './styles.css';
 import ACTIONS from '../../actionTypes';
 import { toast } from 'react-hot-toast';
 
-const RealtimeEditor = ({ socketRef, roomId, OnChangeCode, onRunCode, onSaveCode }) => {
+const RealtimeEditor = ({ socket, roomId, initialCode, OnChangeCode, onRunCode, onSaveCode }) => {
     const [code, setCode] = useState('');
     const [theme, setTheme] = useState('vs-dark');
     const [lang, setLang] = useState('javascript');
     const [isFullScreen, setIsFullScreen] = useState(false);
     const editorRef = useRef(null);
     const codeRef = useRef(null);
+    const socketRef = useRef(socket);
     const isRemoteChange = useRef(false); //to distinguish between the changes coming from server and the locally made changes while typing
 
     useEffect(() => {
-        //console.log(socketRef.current)
-        if (socketRef.current) {
-            socketRef.current.on(ACTIONS.CODE_CHANGE, ({ code }) => {
-                if (code !== null && editorRef.current) {
-                    const currentCode = editorRef.current.getValue();
+        socketRef.current = socket;
+    }, [socket]);
+
+    useEffect(() => {
+        if (typeof initialCode !== 'string') return;
+
+        setCode(initialCode);
+        codeRef.current = initialCode;
+        OnChangeCode(initialCode);
+        if (editorRef.current && editorRef.current.getValue() !== initialCode) {
+            isRemoteChange.current = true;
+            editorRef.current.setValue(initialCode);
+        }
+    }, [initialCode, OnChangeCode]);
+
+    useEffect(() => {
+        if (socket) {
+            const handleCodeChange = ({ code }) => {
+                if (typeof code === 'string') {
+                    const currentCode = editorRef.current?.getValue();
                     if (code !== currentCode) {
-                        isRemoteChange.current = true;
+                        setCode(code);
+                        codeRef.current = code;
+                        OnChangeCode(code);
+                        if (editorRef.current) {
+                            isRemoteChange.current = true;
                         editorRef.current.setValue(code);
+                        }
                     }
                 }
-            });
+            };
+            socket.on(ACTIONS.CODE_CHANGE, handleCodeChange);
+            return () => socket.off(ACTIONS.CODE_CHANGE, handleCodeChange);
         }
-
-        return () => {
-            if (socketRef.current) {
-                socketRef.current.off(ACTIONS.CODE_CHANGE);
-            }
-        };
-    }, [socketRef.current]);
+    }, [socket, OnChangeCode]);
 
     const handleEditorMount = (editor) => {
         editorRef.current = editor;
@@ -50,10 +67,9 @@ const RealtimeEditor = ({ socketRef, roomId, OnChangeCode, onRunCode, onSaveCode
                 OnChangeCode(newCode);
                 
                 // Emit the code change event to other clients
-                socketRef.current.emit(ACTIONS.CODE_CHANGE, {
-                    roomId,
-                    code: newCode,
-                });
+                if (socketRef.current) {
+                    socketRef.current.emit(ACTIONS.CODE_CHANGE, { roomId, code: newCode });
+                }
             }
         });
     };
@@ -194,7 +210,7 @@ const RealtimeEditor = ({ socketRef, roomId, OnChangeCode, onRunCode, onSaveCode
                     </label>
                     <input type='file' id='import-room' style={{display:'none'}} onChange={importCode} />
                     <button onClick={exportCode}><BiExport /> Export </button>
-                    {onSaveCode && <button onClick={handleSaveCode}>Save Code</button>}
+                    {onSaveCode && <button onClick={handleSaveCode}>Save Locally</button>}
                     {onRunCode && <button onClick={handleRunCode}><VscRunAll /> Run </button>}
                 </div>
             </div>

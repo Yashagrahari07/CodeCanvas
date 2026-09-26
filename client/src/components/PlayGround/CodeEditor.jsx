@@ -24,19 +24,19 @@ const CodeEditor = ({runCode}) => {
    const getDefaultCode=async()=>{
         const { data } = await getCardDetails(userId, folderId, fileId);
         console.log(data);
+        const normalizedLanguage = data.language === 'c++' ? 'cpp' : data.language;
         setTitle(data.title)
-        setLang(data.language);
+        setLang(normalizedLanguage);
         if (data.code === '') {
-        setCode(fileExtension[data.language]?.defaultCode);
+        setCode(fileExtension[normalizedLanguage]?.defaultCode);
         } else {
         setCode(data.code);
         }
     }
 
    useEffect(() => {
-        getDefaultCode();
-        codeRef.current=code;
-   }, [fileId]);
+           getDefaultCode();
+       }, [userId, folderId, fileId]);
   
    const codeRef=useRef();
    const editorOptions={
@@ -92,6 +92,7 @@ const CodeEditor = ({runCode}) => {
    }
    const importCode=(e)=>{
         const file=e.target.files[0];
+      if (!file) return;
         console.log(file)
         const type=file.type.includes("text");
         if(type){

@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import './styles.css';
 import { BiArrowFromBottom, BiArrowToBottom } from "react-icons/bi";
 import CodeEditor from './CodeEditor';
-import {makeSubmission} from '../../service/service';
+import {formatExecutionResult, makeSubmission} from '../../service/service';
 import { toast } from 'react-hot-toast';
 
 const Playground = () => {
@@ -66,19 +66,7 @@ const Playground = () => {
       setOutput("Something went wrong: " + message);
     } else {
       setShowLoader(false);
-      if (data.status.id === 3) {
-        // Execution successful
-        setOutput(atob(data.stdout));
-      } else if (data.status.id === 6) {
-        // Compilation error
-        setOutput("Compilation Error:\n" + atob(data.compile_output));
-      } else if (data.status.id === 5) {
-        // Runtime error
-        setOutput("Runtime Error:\n" + atob(data.stderr));
-      } else {
-        // Any other status
-        setOutput("Error: " + data.status.description);
-      }
+      setOutput(formatExecutionResult(data));
     }
   }, []);
 

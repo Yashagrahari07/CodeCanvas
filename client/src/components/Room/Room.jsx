@@ -7,7 +7,7 @@ import ACTIONS from '../../actionTypes.js';
 import toast from 'react-hot-toast';
 import RealtimeEditor from '../CodeEditor/RealtimeEditor.jsx';
 import { BiArrowFromBottom, BiArrowToBottom } from "react-icons/bi";
-import { makeSubmission } from '../../service/service.js';
+import { formatExecutionResult, makeSubmission } from '../../service/service.js';
 
 const Room = () => {
     const location = useLocation();
@@ -15,47 +15,64 @@ const Room = () => {
     const socketRef = useRef(null);
     const { roomId } = useParams();
     const [clients, setClients] = useState([]);
+    const [socket, setSocket] = useState(null);
+    const [initialCode, setInitialCode] = useState(null);
     const codeRef=useRef(null);
     const [input, setInput] = useState('');
     const [output, setOutput] = useState('');
     const [showLoader, setShowLoader] = useState(false);
+    const handleRoomCodeChange = useCallback((code) => {
+      codeRef.current = code;
+    }, []);
 
     //console.log(roomId);
     useEffect(() => {
+      let cancelled = false;
       const init = async () => {
           try {
-              socketRef.current = await initSocket();
-              socketRef.current.on("connect_error", (err) => {
+              const connectedSocket = await initSocket();
+              if (cancelled) {
+                connectedSocket.disconnect();
+                return;
+              }
+              socketRef.current = connectedSocket;
+              setSocket(connectedSocket);
+              connectedSocket.on("connect_error", (err) => {
                 console.log(err.message,err.description);
                 console.log(err.description);
               });
 
-              //emit join room event
-              socketRef.current.emit(ACTIONS.JOIN, {
-                roomId,
-                username: location.state?.username,
-             });
-
              //listen the event emitted by server
-             socketRef.current.on(ACTIONS.JOINED, ({ clients, username, socketId }) => {
+              connectedSocket.on(ACTIONS.JOINED, ({ clients, username, socketId, code }) => {
                 if (username !== location.state?.username) {
                     toast.success(`${username} joined the room.`);
                 }
                 setClients(clients);
-                socketRef.current.emit(ACTIONS.SYNC_CODE, {
-                  roomId,
+                if (typeof code === 'string') {
+                  setInitialCode(code);
+                }
+                if (typeof codeRef.current === 'string') {
+                  connectedSocket.emit(ACTIONS.SYNC_CODE, {
+                    roomId,
                     code: codeRef.current,
                     socketId,
-                });           
+                  });
+                }
               });
               
               //disconnecting from server
-              socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
+              connectedSocket.on(ACTIONS.DISCONNECTED, ({ socketId, username }) => {
                 toast.success(`${username} left the room.`);
                 setClients((prev) =>
                     prev.filter((client) => client.socketId !== socketId)
                 );
                });
+
+              // Emit only after all room listeners are registered.
+              connectedSocket.emit(ACTIONS.JOIN, {
+                roomId,
+                username: location.state?.username,
+              });
 
           } catch (err) {
               console.error('Socket connection error:', err);
@@ -65,9 +82,14 @@ const Room = () => {
 
       init();
       return () => {
-        socketRef.current.off(ACTIONS.JOINED);
-        socketRef.current.off(ACTIONS.DISCONNECTED);
-        socketRef.current.disconnect();
+        cancelled = true;
+        const currentSocket = socketRef.current;
+        if (currentSocket) {
+          currentSocket.off(ACTIONS.JOINED);
+          currentSocket.off(ACTIONS.DISCONNECTED);
+          currentSocket.disconnect();
+        }
+        setSocket(null);
       };
      
   }, [roomId, location.state?.username, navigate]);
@@ -138,19 +160,7 @@ const Room = () => {
       setOutput("Something went wrong: " + message);
     } else {
       setShowLoader(false);
-      if (data.status.id === 3) {
-        // Execution successful
-        setOutput(atob(data.stdout));
-      } else if (data.status.id === 6) {
-        // Compilation error
-        setOutput("Compilation Error:\n" + atob(data.compile_output));
-      } else if (data.status.id === 5) {
-        // Runtime error
-        setOutput("Runtime Error:\n" + atob(data.stderr));
-      } else {
-        // Any other status
-        setOutput("Error: " + data.status.description);
-      }
+      setOutput(formatExecutionResult(data));
     }
   }, []);
 
@@ -159,7 +169,7 @@ const Room = () => {
   }, [input, callback]);
 
   const saveCode = (code) => {
-    // For now, just show a toast. In future, you might want to save to a shared room storage
+    localStorage.setItem(`codecanvas:room:${roomId}`, code);
     toast.success("Code saved locally", {
       position: 'top-center',
       duration: 2000
@@ -189,11 +199,11 @@ const Room = () => {
                 </div>
                 <div className='editorWrap'>
                     <RealtimeEditor 
+                      socket={socket}
+                      initialCode={initialCode}
                         socketRef={socketRef}
                         roomId={roomId}
-                        OnChangeCode={(code) => {
-                            codeRef.current = code;
-                        }}
+                        OnChangeCode={handleRoomCodeChange}
                         onRunCode={runCode}
                         onSaveCode={saveCode}
                     />

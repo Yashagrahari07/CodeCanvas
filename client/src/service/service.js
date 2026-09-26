@@ -1,5 +1,16 @@
 import API from '../api/api';
 
+const decode = (value) => value ? atob(value) : '';
+
+export const formatExecutionResult = (data) => {
+    const statusId = data?.status?.id;
+    if (statusId === 3) return decode(data.stdout);
+    if (statusId === 6) return `Compilation Error:\n${decode(data.compile_output)}`;
+    if (statusId === 5) return `Time Limit Exceeded\n${decode(data.stderr)}`;
+    if (statusId === 11) return `Runtime Error:\n${decode(data.stderr)}`;
+    return `Error: ${data?.status?.description || 'Unknown execution status'}`;
+};
+
 export async function makeSubmission({ code, language, callback, stdin }) {
     try {
         callback({ apiStatus: 'loading' });
@@ -8,6 +19,9 @@ export async function makeSubmission({ code, language, callback, stdin }) {
             language,
             stdin: stdin || '',
         });
+        if (!data?.status) {
+            throw new Error('Invalid execution response');
+        }
         callback({ apiStatus: 'success', data });
     } catch (error) {
         callback({

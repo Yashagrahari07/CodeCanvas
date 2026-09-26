@@ -18,12 +18,13 @@ const io = new Server(server);
 const PORT = process.env.PORT || 5000;
 
 const userSocketMap = {};
+const roomDocuments = new Map();
 io.on('connection', (socket) => {
   //console.log("Socket connected ",socket.id);
-  socket.on(ACTIONS.JOIN, (data) => joinRoom(socket, io, userSocketMap, data));
-  socket.on('disconnecting', () => disconnect(socket, io, userSocketMap));
-  socket.on(ACTIONS.CODE_CHANGE, (data) => handleCodeChange(socket, data));
-  socket.on(ACTIONS.SYNC_CODE, (data) => syncCode(socket, io, data));
+  socket.on(ACTIONS.JOIN, (data) => joinRoom(socket, io, userSocketMap, roomDocuments, data));
+  socket.on('disconnecting', () => disconnect(socket, io, userSocketMap, roomDocuments));
+  socket.on(ACTIONS.CODE_CHANGE, (data) => handleCodeChange(socket, roomDocuments, data));
+  socket.on(ACTIONS.SYNC_CODE, (data) => syncCode(socket, io, roomDocuments, data));
 });
 
 // CORS configuration - supports single origin or comma-separated multiple origins
