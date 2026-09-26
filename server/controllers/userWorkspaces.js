@@ -1,9 +1,18 @@
 import User from '../models/User.js';
+import {
+  isNonEmptyString,
+  isValidObjectId,
+  normalizeLanguage,
+  supportedLanguages,
+  validateCard,
+  validateWorkspace,
+} from '../utils/validation.js';
 
 // Fetch all workspaces for a user by user ID
 export const getUserWorkspaces = async (req, res) => {
   try {
     const userId = req.params.id;
+    if (!isValidObjectId(userId)) return res.status(400).json({ message: 'Invalid user ID' });
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
@@ -18,6 +27,9 @@ export const addUserWorkspace = async (req, res) => {
   try {
     const userId = req.params.id;
     const newWorkspace = req.body;
+    if (!isValidObjectId(userId) || !validateWorkspace(newWorkspace) || (newWorkspace.cards || []).some((card) => !validateCard(card))) {
+      return res.status(400).json({ message: 'Invalid workspace data' });
+    }
 
     const user = await User.findById(userId);
     if (!user) {
@@ -33,6 +45,7 @@ export const addUserWorkspace = async (req, res) => {
 };
 export const deleteWorkspace = async (req, res) => {
   const { id, wsId} = req.params;
+  if (!isValidObjectId(id) || !isValidObjectId(wsId)) return res.status(400).json({ message: 'Invalid workspace ID' });
   //console.log(id,wsId)
   try {
       const user = await User.findById(id);
@@ -48,7 +61,10 @@ export const deleteWorkspace = async (req, res) => {
 };
 export const updateWorkspaceName = async (req, res) => {
   const { id, wsId } = req.params;
-  const { title } = req.body;
+  const { title } = req.body || {};
+  if (!isValidObjectId(id) || !isValidObjectId(wsId) || !isNonEmptyString(title, 100)) {
+      return res.status(400).json({ message: 'Invalid workspace title' });
+  }
 
   try {
       const user = await User.findById(id);
@@ -68,7 +84,11 @@ export const updateWorkspaceName = async (req, res) => {
 };
 export const addCardToWorkspace = async (req, res) => {
   const { id, wsId } = req.params;
-  const { title, language } = req.body;
+  const { title, language } = req.body || {};
+  const normalizedLanguage = normalizeLanguage(language);
+  if (!isValidObjectId(id) || !isValidObjectId(wsId) || !supportedLanguages.has(normalizedLanguage) || (title !== undefined && !isNonEmptyString(title, 100))) {
+      return res.status(400).json({ message: 'Invalid file data' });
+  }
 
   try {
       const user = await User.findById(id);
@@ -78,9 +98,9 @@ export const addCardToWorkspace = async (req, res) => {
       const workspace = user.ws.id(wsId);
       if (!workspace) return res.status(404).json({ message: "Workspace not found" });
       
-      const newCard = {language };
+      const newCard = { language: normalizedLanguage };
       if (title) {
-        newCard.title = title;
+        newCard.title = title.trim();
       }
       workspace.cards.push(newCard);
       await user.save();
@@ -92,7 +112,10 @@ export const addCardToWorkspace = async (req, res) => {
 };
 export const updateCardName = async (req, res) => {
   const { id, wsId, cardId } = req.params;
-  const { newTitle } = req.body;
+  const { newTitle } = req.body || {};
+  if (!isValidObjectId(id) || !isValidObjectId(wsId) || !isValidObjectId(cardId) || !isNonEmptyString(newTitle, 100)) {
+      return res.status(400).json({ message: 'Invalid file title' });
+  }
 
   try {
       const user = await User.findById(id);
@@ -114,6 +137,9 @@ export const updateCardName = async (req, res) => {
 };
 export const deleteCardFromWorkspace = async (req, res) => {
   const { id, wsId, cardId } = req.params;
+  if (!isValidObjectId(id) || !isValidObjectId(wsId) || !isValidObjectId(cardId)) {
+      return res.status(400).json({ message: 'Invalid file ID' });
+  }
 
   try {
       const user = await User.findById(id);
@@ -136,6 +162,9 @@ export const deleteCardFromWorkspace = async (req, res) => {
 
 export const getCardDetails = async (req, res) => {
   const { id, wsId, cardId } = req.params;
+  if (!isValidObjectId(id) || !isValidObjectId(wsId) || !isValidObjectId(cardId)) {
+      return res.status(400).json({ message: 'Invalid file ID' });
+  }
 
   try {
     const user = await User.findById(id);
@@ -156,7 +185,10 @@ export const getCardDetails = async (req, res) => {
 
 export const updateCardCode = async (req, res) => {
   const { id, wsId, cardId } = req.params;
-  const { newCode } = req.body;
+  const { newCode } = req.body || {};
+  if (!isValidObjectId(id) || !isValidObjectId(wsId) || !isValidObjectId(cardId) || typeof newCode !== 'string' || newCode.length > 100000) {
+      return res.status(400).json({ message: 'Invalid source code' });
+  }
   //console.log(id,wsId,cardId,newCode);
   try {
       const user = await User.findById(id);

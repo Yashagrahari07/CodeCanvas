@@ -1,20 +1,20 @@
 import mongoose from "mongoose";
 
 const cardSchema = mongoose.Schema({
-  title: { type: String,default:'new'},
-  language: { type: String, required: true },
-  code: {type:String,default:''}
+  title: { type: String, default: 'new', trim: true, maxlength: 100 },
+  language: { type: String, required: true, enum: ['cpp', 'python', 'javascript', 'java'] },
+  code: { type: String, default: '', maxlength: 100000 }
 });
 
 const workspaceSchema = mongoose.Schema({
-  title: { type: String, required: true },
+  title: { type: String, required: true, trim: true, maxlength: 100 },
   cards: [cardSchema]
 });
 
 const userSchema=mongoose.Schema({
-    name:{type:String,required:true},
-    email:{type:String,required:true},
-    password:{type:String,required:true},
+    name:{type:String,required:true,trim:true,maxlength:100},
+    email:{type:String,required:true,unique:true,lowercase:true,trim:true},
+    password:{type:String,required:true,minlength:8},
     id:{type:String},
     ws: [workspaceSchema],
 })

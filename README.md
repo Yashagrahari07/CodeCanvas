@@ -37,6 +37,13 @@
 - **Modern UI**: Beautiful, responsive interface with dark/light theme support
 - **Code Saving**: Save your code to workspaces for later access
 
+### Room and execution limits
+
+- Maximum 20 participants per room
+- Maximum 10 room creations per IP per minute
+- Rooms expire after one hour of inactivity
+- Source code and input are limited to 100 KB each
+
 ---
 
 ## 🛠️ Installation and Setup
@@ -67,6 +74,9 @@
     MONGO_URI=your_mongodb_connection_string_here
     SECRET_KEY=your_jwt_secret_key_here
     CORS_ORIGIN=http://localhost:5173
+   JUDGE0_API_URL=https://judge0-ce.p.rapidapi.com/submissions
+   JUDGE0_API_HOST=judge0-ce.p.rapidapi.com
+   JUDGE0_API_KEY=your_judge0_api_key_here
     ```
 
    - **PORT**: Server port (default: 5000)
@@ -108,19 +118,12 @@
     # Socket.io Configuration
     VITE_SOCKET_URL=http://localhost:5000
 
-    # Judge0 API Configuration
-    VITE_JUDGE0_API_URL=https://judge0-ce.p.rapidapi.com/submissions
-    VITE_JUDGE0_API_HOST=judge0-ce.p.rapidapi.com
-    VITE_JUDGE0_API_KEY=your_judge0_api_key_here
     ```
 
    **Note**: In Vite, environment variables must be prefixed with `VITE_` to be exposed to client-side code.
 
    - **VITE_API_BASE_URL**: Backend API base URL
    - **VITE_SOCKET_URL**: WebSocket server URL
-   - **VITE_JUDGE0_API_URL**: Judge0 API endpoint
-   - **VITE_JUDGE0_API_HOST**: Judge0 API host
-   - **VITE_JUDGE0_API_KEY**: Your Judge0 API key from RapidAPI
 
 4. **Start the development server**
     ```sh
@@ -218,12 +221,12 @@ CodeCanvas/
 - `MONGO_URI` - MongoDB connection string
 - `SECRET_KEY` - JWT secret key
 - `CORS_ORIGIN` - Allowed CORS origins
+- `JUDGE0_API_URL` - Server-side Judge0 endpoint
+- `JUDGE0_API_HOST` - Server-side Judge0 host
+- `JUDGE0_API_KEY` - Server-side Judge0 API key
 
 ### Client (.env)
 - `VITE_API_BASE_URL` - Backend API URL
 - `VITE_SOCKET_URL` - WebSocket server URL
-- `VITE_JUDGE0_API_URL` - Judge0 API endpoint
-- `VITE_JUDGE0_API_HOST` - Judge0 API host
-- `VITE_JUDGE0_API_KEY` - Judge0 API key
 
 ---

@@ -1,11 +1,16 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import { isNonEmptyString, isValidEmail } from '../utils/validation.js';
 
 export const signin=async(req,res)=>{
-    const {email,password}=req.body;        
+  const {email,password}=req.body || {};
+  const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+  if (!isValidEmail(normalizedEmail) || !isNonEmptyString(password, 200)) {
+    return res.status(400).json({message:"Valid email and password are required"});
+  }
     try {
-        const existingUser=await User.findOne({email});
+    const existingUser=await User.findOne({email: normalizedEmail});
         if(!existingUser) return res.status(404).json({message:"User doesn't exist"});
 
         const isPassCorrect=await bcrypt.compare(password,existingUser.password);
@@ -18,10 +23,15 @@ export const signin=async(req,res)=>{
     }
 }
 export const signup = async (req, res) => {
-    const { email, password, confirmPassword, fullName } = req.body;
+    const { email, password, confirmPassword, fullName } = req.body || {};
+    const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
   
+    if (!isValidEmail(normalizedEmail) || !isNonEmptyString(fullName, 100) || !isNonEmptyString(password, 200)) {
+      return res.status(400).json({ message: "Valid name, email, and password are required" });
+    }
+
     try {
-      const existingUser = await User.findOne({ email });
+      const existingUser = await User.findOne({ email: normalizedEmail });
   
       if (existingUser) {
         return res.status(400).json({ message: "User already exists" });
@@ -33,7 +43,7 @@ export const signup = async (req, res) => {
   
       const hashedPass = await bcrypt.hash(password, 12);
   
-      const result = await User.create({ email, password: hashedPass, name: fullName });
+      const result = await User.create({ email: normalizedEmail, password: hashedPass, name: fullName.trim() });
   
       const token = jwt.sign({ email: result.email, id: result._id }, process.env.SECRET_KEY, { expiresIn: '1h' });
   
