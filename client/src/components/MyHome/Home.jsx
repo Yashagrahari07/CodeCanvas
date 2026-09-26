@@ -28,10 +28,14 @@ const Home = () => {
 
     const getList=async()=>{
         setShowLoader(true);
-        const list=await getData(userId);
-        //console.log(list.data);
-        setWs(list.data);
-        setShowLoader(false);
+        try {
+          const list=await getData(userId);
+          setWs(list.data);
+        } catch (error) {
+          toast.error(error?.response?.data?.message || 'Could not load folders');
+        } finally {
+          setShowLoader(false);
+        }
     }
     useEffect(()=>{
         getList();
@@ -47,11 +51,15 @@ const Home = () => {
               </button>
               <button style={{borderRadius:'50%',padding:'1vh', border: 'none', marginLeft:'1vh',background:'#5a9a4a',color:'white'}} 
                       onClick={async() => {
-                        await deleteWorkspace(userId,wsId);
-                        console.log(userId,wsId);
-                        toast.success('Deleted Folder');
-                        getList();
-                        toast.dismiss(t.id);
+                        try {
+                          await deleteWorkspace(userId,wsId);
+                          toast.success('Deleted Folder');
+                          await getList();
+                        } catch (error) {
+                          toast.error(error?.response?.data?.message || 'Could not delete folder');
+                        } finally {
+                          toast.dismiss(t.id);
+                        }
                       }}>
                 Yes
               </button>
@@ -91,10 +99,15 @@ const Home = () => {
               </button>
               <button style={{borderRadius:'50%',padding:'1vh', border: 'none', marginLeft:'1vh',background:'#5a9a4a',color:'white'}} 
                       onClick={async() => {
-                        await deleteCardFromWorkspace(userId, wsId, cardId);
-                        toast.success('Deleted Workspace');
-                        getList();
-                        toast.dismiss(t.id);
+                        try {
+                          await deleteCardFromWorkspace(userId, wsId, cardId);
+                          toast.success('Deleted Workspace');
+                          await getList();
+                        } catch (error) {
+                          toast.error(error?.response?.data?.message || 'Could not delete workspace');
+                        } finally {
+                          toast.dismiss(t.id);
+                        }
                       }}>
                 Yes
               </button>

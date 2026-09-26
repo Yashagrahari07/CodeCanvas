@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { IoCloseSharp } from 'react-icons/io5';
 import { FcOk } from 'react-icons/fc';
+import toast from 'react-hot-toast';
 import {getData,addData,updateWorkspaceName,addCardToWorkspace,updateCardName} from '../../api/api';
 
 
@@ -25,27 +26,28 @@ const Model = ({ openModal, setOpenModal, wsId, cardId, getLists }) => {
 
   useEffect(()=>{   
     const getList=async()=>{
-      const list=await getData(userId);
-      //console.log(list.data);
-      setFolders(list.data);
+      try {
+        const list=await getData(userId);
+        setFolders(list.data);
+      } catch (error) {
+        setFolders([]);
+      }
     }
     getList();
   },[])
 
-  const addFolder = async(folderName) => { 
-    //console.log(folderName);
+  const addFolder = async(folderName) => {
     const newState= {
       title: folderName,
       cards: []
     }
-    //console.log(newState);
-    const res=await addData(userId,newState);
-    getLists();   
+    await addData(userId,newState);
+    await getLists();
   }
   const updateFolder=async(wsId, enteredVal)=>{
     //console.log(userId,wsId,enteredVal);
     await updateWorkspaceName(userId, wsId, enteredVal);
-    getLists();
+    await getLists();
   }
 
   const addCard = async (wsId, cardTitle, cardLanguage) => {
@@ -53,41 +55,32 @@ const Model = ({ openModal, setOpenModal, wsId, cardId, getLists }) => {
         title: cardTitle,
           language: cardLanguage
       };
-      console.log(newCard,userId,wsId);
       await addCardToWorkspace(userId, wsId, newCard);
-      getLists();
+      await getLists();
   };
   
   const editCardname=async(wsId, cardId, enteredVal)=>{
     //console.log(wsId,cardId,enteredVal)
-    const res=await updateCardName(userId, wsId, cardId, enteredVal)
-    console.log(res);
-    getLists();
+    await updateCardName(userId, wsId, cardId, enteredVal);
+    await getLists();
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    if (!enteredVal.trim() || (openModal === 2 && !enteredLang)) return;
     const m = openModal;
-    switch (m) {
-      case 1:
-        // console.log('Enter Foldername',enteredVal);
-        addFolder(enteredVal);
-        break;
-      case 2:
-        // console.log('Enter Workspace name',enteredVal,enteredLang);
-        addCard(wsId,enteredVal,enteredLang);
-        break;
-      case 3:
-        updateFolder(wsId, enteredVal);
-        break;
-      case 4:
-        // console.log('Workspace name',enteredVal);
-        editCardname(wsId,cardId,enteredVal)
-        break;
-      default:
-        console.log('');
-        break;
+    try {
+      switch (m) {
+        case 1: await addFolder(enteredVal); break;
+        case 2: await addCard(wsId,enteredVal,enteredLang); break;
+        case 3: await updateFolder(wsId, enteredVal); break;
+        case 4: await editCardname(wsId,cardId,enteredVal); break;
+        default: return;
+      }
+      setOpenModal({ state: false });
+    } catch (error) {
+      const message = error?.response?.data?.message || 'Could not save changes';
+      toast.error(message);
     }
-    setOpenModal({ state: false });
   };
 
   useEffect(() => {

@@ -11,9 +11,9 @@ export const formatExecutionResult = (data) => {
     return `Error: ${data?.status?.description || 'Unknown execution status'}`;
 };
 
-export async function makeSubmission({ code, language, callback, stdin }) {
+export async function makeSubmission({ code, language, callback, stdin, isCurrent = () => true }) {
     try {
-        callback({ apiStatus: 'loading' });
+        if (isCurrent()) callback({ apiStatus: 'loading' });
         const { data } = await API.post('/execute', {
             code,
             language,
@@ -22,11 +22,13 @@ export async function makeSubmission({ code, language, callback, stdin }) {
         if (!data?.status) {
             throw new Error('Invalid execution response');
         }
-        callback({ apiStatus: 'success', data });
+        if (isCurrent()) callback({ apiStatus: 'success', data });
     } catch (error) {
-        callback({
-            apiStatus: 'error',
-            message: error?.response?.data?.message || error.message,
-        });
+        if (isCurrent()) {
+            callback({
+                apiStatus: 'error',
+                message: error?.response?.data?.message || error.message,
+            });
+        }
     }
 }

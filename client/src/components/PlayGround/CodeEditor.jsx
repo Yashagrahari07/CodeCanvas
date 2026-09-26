@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { BiFullscreen, BiImport,BiExport } from "react-icons/bi";
 import { VscRunAll } from "react-icons/vsc";
 import {Editor} from '@monaco-editor/react';
-import { updateCardCode,getCardDetails,getData} from '../../api/api';
+import { updateCardCode,getCardDetails } from '../../api/api';
 import { toast } from 'react-hot-toast';
 
 const CodeEditor = ({runCode}) => {
@@ -21,21 +21,22 @@ const CodeEditor = ({runCode}) => {
    const {folderId,fileId}=params;
    //console.log(folder,file);
   
-   const getDefaultCode=async()=>{
-        const { data } = await getCardDetails(userId, folderId, fileId);
-        console.log(data);
-        const normalizedLanguage = data.language === 'c++' ? 'cpp' : data.language;
-        setTitle(data.title)
-        setLang(normalizedLanguage);
-        if (data.code === '') {
-        setCode(fileExtension[normalizedLanguage]?.defaultCode);
-        } else {
-        setCode(data.code);
-        }
-    }
-
    useEffect(() => {
-           getDefaultCode();
+                let cancelled = false;
+                const loadCode = async () => {
+                    try {
+                        const { data } = await getCardDetails(userId, folderId, fileId);
+                        if (cancelled) return;
+                        const normalizedLanguage = data.language === 'c++' ? 'cpp' : data.language;
+                        setTitle(data.title);
+                        setLang(normalizedLanguage);
+                        setCode(data.code === '' ? fileExtension[normalizedLanguage]?.defaultCode || '' : data.code);
+                    } catch (error) {
+                        if (!cancelled) toast.error(error?.response?.data?.message || 'Could not load code file');
+                    }
+                };
+                loadCode();
+                return () => { cancelled = true; };
        }, [userId, folderId, fileId]);
   
    const codeRef=useRef();
@@ -147,15 +148,12 @@ const CodeEditor = ({runCode}) => {
         link.click();
   }
   const saveEditorCode=async()=>{
-        const newcode=codeRef.current;
-        console.log(userId,folderId,fileId,newcode);
-        const res=await updateCardCode(userId,folderId,fileId,newcode)
-        console.log(res);
-        toast.success("Code saved successfully",{
-            position:'top-center'
-        })
-        // const newdata=await getData(userId);
-        // console.log(newdata.data);
+                try {
+                    await updateCardCode(userId,folderId,fileId,codeRef.current || '');
+                    toast.success("Code saved successfully", { position:'top-center' });
+                } catch (error) {
+                    toast.error(error?.response?.data?.message || 'Could not save code');
+                }
   }
   const fullScreen=()=>{
         setIsFullScreen(!isFullScreen);

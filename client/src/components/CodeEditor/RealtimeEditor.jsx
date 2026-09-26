@@ -14,11 +14,25 @@ const RealtimeEditor = ({ socket, roomId, initialCode, OnChangeCode, onRunCode, 
     const editorRef = useRef(null);
     const codeRef = useRef(null);
     const socketRef = useRef(socket);
+    const pendingCodeRef = useRef(null);
     const isRemoteChange = useRef(false); //to distinguish between the changes coming from server and the locally made changes while typing
 
     useEffect(() => {
         socketRef.current = socket;
     }, [socket]);
+
+    useEffect(() => () => clearTimeout(pendingCodeRef.current), []);
+
+    const emitCodeChange = (newCode, immediate = false) => {
+        clearTimeout(pendingCodeRef.current);
+        if (immediate) {
+            socketRef.current?.emit(ACTIONS.CODE_CHANGE, { roomId, code: newCode });
+            return;
+        }
+        pendingCodeRef.current = setTimeout(() => {
+            socketRef.current?.emit(ACTIONS.CODE_CHANGE, { roomId, code: newCode });
+        }, 100);
+    };
 
     useEffect(() => {
         if (typeof initialCode !== 'string') return;
@@ -67,9 +81,7 @@ const RealtimeEditor = ({ socket, roomId, initialCode, OnChangeCode, onRunCode, 
                 OnChangeCode(newCode);
                 
                 // Emit the code change event to other clients
-                if (socketRef.current) {
-                    socketRef.current.emit(ACTIONS.CODE_CHANGE, { roomId, code: newCode });
-                }
+                emitCodeChange(newCode);
             }
         });
     };
@@ -97,12 +109,7 @@ const RealtimeEditor = ({ socket, roomId, initialCode, OnChangeCode, onRunCode, 
                 codeRef.current = importedCode;
                 OnChangeCode(importedCode);
                 // Emit the code change to other clients
-                if (socketRef.current) {
-                    socketRef.current.emit(ACTIONS.CODE_CHANGE, {
-                        roomId,
-                        code: importedCode,
-                    });
-                }
+                emitCodeChange(importedCode, true);
             }
         } else {
             toast((t) => (

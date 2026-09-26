@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import './styles.css';
 import { BiArrowFromBottom, BiArrowToBottom } from "react-icons/bi";
 import CodeEditor from './CodeEditor';
@@ -15,9 +15,11 @@ const Playground = () => {
   const [isResizing, setIsResizing] = useState(false);
 
   const[showLoader,setShowLoader]=useState(false);
+  const latestRunRef = useRef(0);
 
   const importInput = (e) => {
     const file = e.target.files[0];
+    if (!file) return;
     const type = file.type.includes("text");
     if (type) {
       const fileReader = new FileReader();
@@ -71,7 +73,14 @@ const Playground = () => {
   }, []);
 
   const runCode = useCallback(({ code, language }) => {
-    makeSubmission({ code, language, stdin: input, callback });
+    const runId = ++latestRunRef.current;
+    makeSubmission({
+      code,
+      language,
+      stdin: input,
+      callback,
+      isCurrent: () => runId === latestRunRef.current,
+    });
   }, [input, callback]);
   //recreates this function whenever there's change in input
 

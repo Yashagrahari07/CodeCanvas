@@ -21,6 +21,7 @@ const Room = () => {
     const [input, setInput] = useState('');
     const [output, setOutput] = useState('');
     const [showLoader, setShowLoader] = useState(false);
+    const latestRunRef = useRef(0);
     const handleRoomCodeChange = useCallback((code) => {
       codeRef.current = code;
     }, []);
@@ -41,6 +42,14 @@ const Room = () => {
                 console.log(err.message,err.description);
                 console.log(err.description);
               });
+
+              const joinCurrentRoom = () => {
+                connectedSocket.emit(ACTIONS.JOIN, {
+                  roomId,
+                  username: location.state?.username,
+                });
+              };
+              connectedSocket.on('connect', joinCurrentRoom);
 
              //listen the event emitted by server
               connectedSocket.on(ACTIONS.JOINED, ({ clients, username, socketId, code }) => {
@@ -68,11 +77,8 @@ const Room = () => {
                 );
                });
 
-              // Emit only after all room listeners are registered.
-              connectedSocket.emit(ACTIONS.JOIN, {
-                roomId,
-                username: location.state?.username,
-              });
+              // Socket.IO may already be connected before the listener is attached.
+              if (connectedSocket.connected) joinCurrentRoom();
 
           } catch (err) {
               console.error('Socket connection error:', err);
@@ -85,6 +91,7 @@ const Room = () => {
         cancelled = true;
         const currentSocket = socketRef.current;
         if (currentSocket) {
+          currentSocket.off('connect');
           currentSocket.off(ACTIONS.JOINED);
           currentSocket.off(ACTIONS.DISCONNECTED);
           currentSocket.disconnect();
@@ -165,7 +172,14 @@ const Room = () => {
   }, []);
 
   const runCode = useCallback(({ code, language }) => {
-    makeSubmission({ code, language, stdin: input, callback });
+    const runId = ++latestRunRef.current;
+    makeSubmission({
+      code,
+      language,
+      stdin: input,
+      callback,
+      isCurrent: () => runId === latestRunRef.current,
+    });
   }, [input, callback]);
 
   const saveCode = (code) => {
