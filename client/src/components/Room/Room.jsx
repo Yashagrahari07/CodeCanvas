@@ -15,9 +15,7 @@ import {
     Terminal, 
     Upload, 
     Download, 
-    Loader2, 
-    Code2,
-    Shield
+    Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -37,9 +35,64 @@ const Room = () => {
     const [showLoader, setShowLoader] = useState(false);
     const latestRunRef = useRef(0);
 
+    // Draggable Resizer States
+    const [sidebarWidth, setSidebarWidth] = useState(18); // percentage
+    const [rightPanelWidth, setRightPanelWidth] = useState(22); // percentage
+    const [isResizingLeft, setIsResizingLeft] = useState(false);
+    const [isResizingRight, setIsResizingRight] = useState(false);
+
     const handleRoomCodeChange = useCallback((code) => {
         codeRef.current = code;
     }, []);
+
+    const handleLeftMouseDown = (e) => {
+        setIsResizingLeft(true);
+        e.preventDefault();
+    };
+
+    const handleRightMouseDown = (e) => {
+        setIsResizingRight(true);
+        e.preventDefault();
+    };
+
+    useEffect(() => {
+        const handleMouseMove = (e) => {
+            const container = document.querySelector('.room-main-container');
+            if (!container) return;
+            const containerWidth = container.offsetWidth;
+
+            if (isResizingLeft) {
+                const newLeftWidth = (e.clientX / containerWidth) * 100;
+                if (newLeftWidth >= 12 && newLeftWidth <= 35 && (100 - newLeftWidth - rightPanelWidth) >= 30) {
+                    setSidebarWidth(newLeftWidth);
+                }
+            } else if (isResizingRight) {
+                const newRightWidth = ((containerWidth - e.clientX) / containerWidth) * 100;
+                if (newRightWidth >= 15 && newRightWidth <= 40 && (100 - sidebarWidth - newRightWidth) >= 30) {
+                    setRightPanelWidth(newRightWidth);
+                }
+            }
+        };
+
+        const handleMouseUp = () => {
+            setIsResizingLeft(false);
+            setIsResizingRight(false);
+        };
+
+        if (isResizingLeft || isResizingRight) {
+            document.addEventListener('mousemove', handleMouseMove);
+            document.addEventListener('mouseup', handleMouseUp);
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+        }
+
+        return () => {
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+            document.body.style.cursor = '';
+            document.body.style.userSelect = '';
+        };
+    }, [isResizingLeft, isResizingRight, sidebarWidth, rightPanelWidth]);
 
     useEffect(() => {
         let cancelled = false;
@@ -171,9 +224,12 @@ const Room = () => {
     };
 
     return (
-        <div className="flex h-screen w-screen bg-[#1e1e1e] overflow-hidden select-none">
-            {/* Sidebar (Left column) */}
-            <aside className="w-64 bg-[#2b2a2a] border-r border-[#323232] flex flex-col justify-between shrink-0 p-4">
+        <div className="room-main-container flex h-screen w-screen bg-[#1e1e1e] overflow-hidden select-none">
+            {/* Sidebar (Left column: Connected Users) */}
+            <aside 
+                className="bg-[#2b2a2a] border-r border-[#323232] flex flex-col justify-between shrink-0 p-4 min-w-0"
+                style={{ width: `${sidebarWidth}%` }}
+            >
                 <div className="flex flex-col h-full min-h-0">
                     {/* Header */}
                     <div className="pb-4 border-b border-[#323232]">
@@ -203,23 +259,34 @@ const Room = () => {
                         <Button
                             variant="outline"
                             onClick={copyRoomId}
-                            className="w-full bg-[#323232] border-[#8ab180]/40 text-[#e2e3e2] hover:bg-[#55a940] hover:text-white font-semibold text-xs justify-start gap-2"
+                            className="w-full bg-[#323232] border-[#8ab180]/40 text-[#e2e3e2] hover:bg-[#55a940] hover:text-white font-semibold text-xs justify-start gap-2 truncate"
                         >
-                            <Copy className="h-4 w-4" /> Copy Room ID
+                            <Copy className="h-4 w-4 shrink-0" /> Copy Room ID
                         </Button>
                         <Button
                             variant="destructive"
                             onClick={leaveRoom}
-                            className="w-full bg-red-600/80 hover:bg-red-700 text-white font-semibold text-xs justify-start gap-2"
+                            className="w-full bg-red-600/80 hover:bg-red-700 text-white font-semibold text-xs justify-start gap-2 truncate"
                         >
-                            <LogOut className="h-4 w-4" /> Leave Room
+                            <LogOut className="h-4 w-4 shrink-0" /> Leave Room
                         </Button>
                     </div>
                 </div>
             </aside>
 
+            {/* Left Resizer Handle Bar */}
+            <div 
+                onMouseDown={handleLeftMouseDown}
+                className="w-2 bg-[#2b2a2a] hover:bg-[#55a940] cursor-col-resize flex items-center justify-center transition-colors shrink-0 z-10 group"
+            >
+                <div className="h-8 w-1 bg-gray-500 rounded-full group-hover:bg-white" />
+            </div>
+
             {/* Central Column: Monaco Realtime Editor */}
-            <div className="flex-1 min-w-0 flex flex-col h-full">
+            <div 
+                className="flex-1 min-w-0 flex flex-col h-full"
+                style={{ width: `${100 - sidebarWidth - rightPanelWidth}%` }}
+            >
                 <RealtimeEditor 
                     socket={socket}
                     initialCode={initialCode}
@@ -231,8 +298,19 @@ const Room = () => {
                 />
             </div>
 
+            {/* Right Resizer Handle Bar */}
+            <div 
+                onMouseDown={handleRightMouseDown}
+                className="w-2 bg-[#2b2a2a] hover:bg-[#55a940] cursor-col-resize flex items-center justify-center transition-colors shrink-0 z-10 group"
+            >
+                <div className="h-8 w-1 bg-gray-500 rounded-full group-hover:bg-white" />
+            </div>
+
             {/* Right Column: Input / Output Panels */}
-            <div className="w-80 h-full bg-[#252526] border-l border-[#323232] flex flex-col shrink-0 text-[#e2e3e2]">
+            <div 
+                className="h-full bg-[#252526] border-l border-[#323232] flex flex-col shrink-0 text-[#e2e3e2] min-w-0"
+                style={{ width: `${rightPanelWidth}%` }}
+            >
                 {/* Input Panel */}
                 <div className="flex-1 flex flex-col min-h-0 border-b border-[#323232]">
                     <div className="h-10 bg-[#2b2a2a] px-3 flex items-center justify-between border-b border-[#323232] shrink-0">
