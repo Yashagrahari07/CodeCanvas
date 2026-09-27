@@ -106,11 +106,13 @@ const Navbar = () => {
                 {/* Mobile Navigation Drawer */}
                 <div className="md:hidden">
                     <Sheet open={open} onOpenChange={setOpen}>
-                        <SheetTrigger asChild>
-                            <Button variant="ghost" size="icon" className="text-[#e2e3e2] hover:bg-[#323232]">
-                                <Menu className="h-6 w-6" />
-                                <span className="sr-only">Toggle Navigation Menu</span>
-                            </Button>
+                        <SheetTrigger
+                            variant="ghost"
+                            size="icon"
+                            className="text-[#e2e3e2] hover:bg-[#323232]"
+                        >
+                            <Menu className="h-6 w-6" />
+                            <span className="sr-only">Toggle Navigation Menu</span>
                         </SheetTrigger>
                         <SheetContent side="right" className="bg-[#2b2a2a] text-[#e2e3e2] border-[#323232] w-[280px]">
                             <SheetHeader className="mb-6 border-b border-[#323232] pb-4">

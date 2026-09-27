@@ -206,11 +206,12 @@ CodeCanvas/
 
 ## 🔧 Technologies Used
 
-- **Frontend**: React, Vite, Monaco Editor, Socket.io Client, Axios
+- **Frontend**: React, Vite, Monaco Editor, Socket.io Client, Axios, TailwindCSS, shadcn/ui, @base-ui/react
 - **Backend**: Node.js, Express, Socket.io, MongoDB, Mongoose
 - **Authentication**: JWT (JSON Web Tokens), bcrypt
 - **Code Execution**: Judge0 API (via RapidAPI)
 - **Real-time Communication**: WebSocket (Socket.io)
+- **Styling**: TailwindCSS with shadcn/ui components (built on Radix UI / @base-ui/react)
 
 ---
 
