@@ -1,8 +1,14 @@
 import mongoose from "mongoose";
+import { normalizeLanguage } from "../utils/validation.js";
 
 const cardSchema = mongoose.Schema({
   title: { type: String, default: 'new', trim: true, maxlength: 100 },
-  language: { type: String, required: true, enum: ['cpp', 'python', 'javascript', 'java'] },
+  language: {
+    type: String,
+    required: true,
+    enum: ['cpp', 'python', 'javascript', 'java'],
+    set: normalizeLanguage,
+  },
   code: { type: String, default: '', maxlength: 100000 }
 });
 
@@ -18,6 +24,20 @@ const userSchema=mongoose.Schema({
     id:{type:String},
     ws: [workspaceSchema],
 })
+
+userSchema.pre('validate', function() {
+  if (this.ws && Array.isArray(this.ws)) {
+    this.ws.forEach((workspace) => {
+      if (workspace.cards && Array.isArray(workspace.cards)) {
+        workspace.cards.forEach((card) => {
+          if (card.language) {
+            card.language = normalizeLanguage(card.language);
+          }
+        });
+      }
+    });
+  }
+});
 
 userSchema.set('toJSON', {
   transform: (_document, returnedUser) => {

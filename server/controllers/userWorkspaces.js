@@ -36,7 +36,15 @@ export const addUserWorkspace = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    user.ws.push(newWorkspace);
+    const normalizedWorkspace = {
+      ...newWorkspace,
+      cards: (newWorkspace.cards || []).map((card) => ({
+        ...card,
+        language: normalizeLanguage(card.language),
+      })),
+    };
+
+    user.ws.push(normalizedWorkspace);
     await user.save();
     res.status(201).json(user.ws);
   } catch (error) {
